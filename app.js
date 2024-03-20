@@ -1,7 +1,6 @@
 if (process.env.NODE_ENV != "production") {
   require("dotenv").config();
 }
-
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -18,9 +17,14 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
+const { isLoggedin, saveRedirectUrl } = require("./middleware.js");
+const wrapAsync = require("./utils/wrapAsync.js");
+const Listing = require("./models/listing.js");
+const bodyParser= require("body-parser")
+require("./auth.js");
 
-// const MONG_URL = "mongodb://127.0.0.1:27017/wonderLust";
-const dburl = process.env.ATLASDB_URL;
+ const MONG_URL = "mongodb://127.0.0.1:27017/wonderLust";
+// const dburl = process.env.ATLASDB_URL;
 main()
   .then(() => {
     console.log("connected to db");
@@ -30,18 +34,19 @@ main()
   });
 
 async function main() {
-  await mongoose.connect(dburl);
+  await mongoose.connect(MONG_URL);
 }
 //view engne and ejs settings and oparse of data so that can be read
 app.use(express.static(path.join(__dirname, "/public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended:true}));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 
 const store = MongoStore.create({
-  mongoUrl:dburl,
+  mongoUrl:MONG_URL,
   crypto: {
     secret: process.env.SECRET,
   },
@@ -93,6 +98,17 @@ app.use((req, res, next) => {
 //   res.send(registeredUser);
 // })
 
+app.get("/search/:key",async (req,res)=>{
+    let {searchText} =  (req.query);
+  let searchData = await Listing.find({
+    "$or":[
+      {"description":{ $regex: ".*" + searchText + ".*", $options: "i" }},
+      {"title":{ $regex: ".*" + searchText + ".*", $options: "i" }},
+    ]
+  });
+  res.render("listings/search.ejs", { searchData });
+})
+
 app.use("/listings", listingsRouter);
 app.use("/listings/:id/reviews", reviewsRouter);
 app.use("/", userRouter);
@@ -101,14 +117,46 @@ app.use("/", userRouter);
 //then in that case we are sending a standered result that is page not found.
 //so,
 
+//login using gmail or google account 
+
+app.get('/auth/google',
+passport.authenticate('google', { scope:
+    [ 'email', 'profile' ] }
+));
+
+app.get( '/auth/google/callback',
+  passport.authenticate( 'google', {
+      successRedirect: '/auth/protected',
+      failureRedirect: '/auth/google/failure'
+}));
+
+app.get("/auth/google/failure",(req,res)=>{
+  req.flash("error","Login Failed");
+  res.redirect("/login");
+})
+
+app.get("/auth/protected", isLoggedin, async (req,res)=>{
+  let name = req.user.displayName;
+  let  google_ID =  req.user.id;
+  let birthday = req.user.emails;
+  console.log(name);
+  console.log(birthday[0].value);
+  console.log(google_ID);
+  req.flash("success", "welcome to WonderLust ");
+  res.redirect("/listings");
+});
+
+
+/// * middleware here 
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "page not found"));
 });
 
+
 //error handeling middleware
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "something went wrong!" } = err;
-  console.log({ err });
+  // console.log({ err });
   res.status(statusCode).render("error.ejs", { message });
 });
 

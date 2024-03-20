@@ -7,61 +7,99 @@
     border-radius: 25px;
     padding: 0 1rem 0 1rem;
   }
-  .btn-search i{
-   margin: 0.5rem;
+  .btn-search i {
+    margin: 0.5rem;
   }
-  .search-inp{
+  .search-inp {
     border-radius: 25px;
     width: 400px;
     padding: 0.5rem 3rem 0.5rem 3rem;
     font-size: 1rem;
   }
+  .navbar {
+    z-index: 555555555555555555555555;
+  }
+  .body{
+    background-color: #FFFFFF;
+  }
 </style>
-<nav
-  class="navbar navbar-expand-md navbar-light bg-light border-bottom sticky-top"
->
-  <!-- in place of lg we have written md as we want that our website should 
+
+<div class="body">
+  <nav
+    class="navbar navbar-expand-md navbar-light bg-light border-bottom sticky-top"
+  >
+    <!-- in place of lg we have written md as we want that our website should 
     fold its navbar and border-bottom for border in the bottom of the //sticky-top is used for to stick it in top -->
 
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"
-      ><i class="fa-regular fa-compass"></i
-    ></a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNavAltMarkup"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/listings">Explore</a>
-      </div>
-      <div class="navbar-nav ms-auto">
-        <form class="d-flex">
-          <input
-            class="form-control me-2 search-inp"
-            type="search"
-            placeholder="Search Destination"
-          />
-          <button class="btn btn-search" type="submit">
-            <i class="fa-solid fa-magnifying-glass"></i>Search
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/listings"
+        ><i class="fa-regular fa-compass"></i
+      ></a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNavAltMarkup"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link" href="/listings">Explore</a>
+        </div>
+        <div class="navbar-nav ms-auto">
+          <form class="d-flex" action="/search/:key">
+            <input
+              class="form-control me-2 search-inp"
+              type="search"
+              placeholder="Search Destination"
+              name="searchText"
+              id="search"
+            />
+            <button  class="btn btn-search" type="submit"  >
+              <i class="fa-solid fa-magnifying-glass"></i>Search
+            </button>
+          </form>
+        </div>
+        <div class="navbar-nav ms-auto">
+          <button
+            class="btn btn-toggle"
+            id="btn-btn-dark"
+            style="border: 1px solid rgb(31, 27, 27)"
+            onclick="darkbtn"
+          >
+            <i class="fa-solid fa-moon"></i>
           </button>
-        </form>
-      </div>
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/listings/new">Airbnb your home</a>
-        <% if(!curUser){ %>
-        <a class="nav-link" href="/signup"><b>sign-Up</b></a>
-        <a class="nav-link" href="/login"><b>login</b></a>
+        </div>
 
-        <% } %> <% if(curUser){ %>
+        <div class="navbar-nav ms-auto">
+          <a class="nav-link" href="/listings/new">Airbnb your home</a>
+          <% if(!curUser){ %>
+          <a class="nav-link" href="/signup"><b>sign-Up</b></a>
+          <a class="nav-link" href="/login"><b>login</b></a>
 
-        <a class="nav-link" href="/logout"><b>logout</b></a>
-        <% } %>
+          <% } %> <% if(curUser){ %>
+
+          <a class="nav-link" href="/logout"><b>logout</b></a>
+          <% } %>
+        </div>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
+</div>
+
+<script>
+  function darkbtn() {
+    let darkbtn1 = document.getElementById("btn-btn-dark");
+  darkbtn1.addEventListener("click", () => {
+    let btnClass = document.getElementsByClassName("body");
+    {
+      if (btnClass.style.backgroundColor == "#FFFFFF") {
+        btnClass.style.backgroundColor = "#000000";
+      } else {
+        btnClass.style.backgroundColor = "#FFFFFF";
+      }
+    }
+  });
+  }
+</script>

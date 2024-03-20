@@ -8,6 +8,7 @@ const multer = require("multer");
 const { storage } = require("../cloudconfig.js");
 const upload = multer({ storage });
 
+// router.get("/listings/:key",wrapAsync(listingControler.searchListing));
 //post and get route for route listing
 router
   .route("/")
@@ -41,5 +42,7 @@ router.get(
   isOwner,
   wrapAsync(listingControler.renderEditForm)
 );
+
+
 
 module.exports = router;

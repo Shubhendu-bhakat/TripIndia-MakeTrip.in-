@@ -34,43 +34,47 @@
        align-items: center;
       
     }
+    .filter a{
+      text-decoration: none;
+      color: #990000;
+  }
   </style>
   <div id="filters">
     <div class="filter">
       <div><i class="fa-solid fa-fire"></i></div>
-      <p>Trending</p>
+      <a href="/search/:key"><p>Trending</p></a>
     </div>
     <div class="filter">
       <div><i class="fa-solid fa-city"></i></div>
-      <p>City-premium</p>
+      <a href="/search/:key"><p>City-premium</p></a>
     </div>
     <div class="filter">
       <div><i class="fa-solid fa-bed"></i></div>
-      <p>Rooms</p>
+      <a href="/search/:key"><p>Rooms</p></a>
     </div>
     <div class="filter">
       <div><i class="fa-solid fa-umbrella-beach"></i></div>
-      <p>Beach</p>
+      <a href="/search/:key"><p>Beach</p></a>
     </div>
     <div class="filter">
       <div><i class="fa-solid fa-mountain"></i></div>
-      <p>Mountain</p>
+      <a href="/search/:key"><p>Mountain</p></a>
     </div>
     <div class="filter">
       <div><i class="fa-solid fa-tractor"></i></div>
-      <p>Farm</p>
+      <a href="/search/:key"><p>Farm</p></a>
     </div>
     <div class="filter">
       <div><i class="fa-brands fa-fort-awesome"></i></div>
-      <p>Cstel</p>
+      <a href="/search/:key"><p>Cstel</p></a>
     </div>
     <div class="filter">
       <div><i class="fa-solid fa-campground"></i></div>
-      <p>Camping</p>
+      <a href="/search/:key"><p>Camping</p></a>
     </div>
     <div class="filter">
       <div><i class="fa-solid fa-hand-holding-dollar"></i></div>
-      <p>Premium</p>
+      <a href="/search/:key"><p>Premium</p></a>
     </div>
     <div class="tax-toogle">
       <div class="form-check-reverse form-switch">
@@ -86,30 +90,41 @@
       </div>
     </div>
   </div>
-  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
-    <% for(let data of searchData ) {%>
-    <a href="/listings/<%= data._id %>" class="listing-link">
-      <div class="card col listing-card">
-        <img
-          src="<%= data.image.url %>"
-          class="card-img-top"
-          alt="listing-image"
-          style="height: 20rem"
-        />
-        <div class="card-img-overlay"></div>
-  
-        <div class="card-body">
-          <p class="card-text">
-            <b> <%= data.title %></b><br />
-            <b> &#8377; <%= data.price.toLocaleString("en-IN") %>/night</b>
-            <i class="tax-info">&nbsp;&nbsp;+18% GST </i>
-          </p>
+
+  <% if(searchData.length > 0) {%>
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+      <% for(let data of searchData ) {%>
+      <a href="/listings/<%= data._id %>" class="listing-link">
+        <div class="card col listing-card">
+          <img
+            src="<%= data.image.url %>"
+            class="card-img-top"
+            alt="listing-image"
+            style="height: 20rem"
+          />
+          <div class="card-img-overlay"></div>
+    
+          <div class="card-body">
+            <p class="card-text">
+              <b> <%= data.title %></b><br />
+              <b> &#8377; <%= data.price.toLocaleString("en-IN") %>/night</b>
+              <i class="tax-info">&nbsp;&nbsp;+18% GST </i>
+            </p>
+          </div>
         </div>
-      </div>
-    </a>
-  
-    <% } %>
+      </a>
+    
+      <% } %>
+    </div>
+      
+  <% } %> 
+  <% if(searchData.length == 0) {%>
+
+<div class="alert alert-danger col-6 offser-3" role="alert">
+    <h4 class="alert-heading">Listing you requested for does not exists </h4>
   </div>
+
+    <% } %>
   
   <script>
     let taxSwitch = document.getElementById("flexSwitchCheckDefault");

@@ -1,3 +1,4 @@
+const user = require("../models/user");
 const User = require("../models/user");
 
 module.exports.renderSignupForm = (req, res) => {
@@ -39,3 +40,12 @@ module.exports.logOut = (req, res, next) => {
     res.redirect("/listings");
   });
 };
+
+module.exports.googleSignIn = async (req,res)=>{
+  try {
+    let {username,email} = req.body;
+    const newUser = new User({email,username});
+  } catch (error) {
+    
+  }
+}
