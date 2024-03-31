@@ -20,10 +20,10 @@ const User = require("./models/user.js");
 const { isLoggedin, saveRedirectUrl } = require("./middleware.js");
 const wrapAsync = require("./utils/wrapAsync.js");
 const Listing = require("./models/listing.js");
-const bodyParser= require("body-parser")
+const bodyParser = require("body-parser")
 require("./auth.js");
 
- const MONG_URL = "mongodb://127.0.0.1:27017/wonderLust";
+const MONG_URL = "mongodb://127.0.0.1:27017/wonderLust";
 // const dburl = process.env.ATLASDB_URL;
 main()
   .then(() => {
@@ -41,18 +41,18 @@ app.use(express.static(path.join(__dirname, "/public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 
 const store = MongoStore.create({
-  mongoUrl:MONG_URL,
+  mongoUrl: MONG_URL,
   crypto: {
     secret: process.env.SECRET,
   },
-  touchAfter:24*3600,
+  touchAfter: 24 * 3600,
 });
-store.on("error",()=>{
+store.on("error", () => {
   console.log("Error in mongoStore");
 })
 
@@ -98,12 +98,12 @@ app.use((req, res, next) => {
 //   res.send(registeredUser);
 // })
 
-app.get("/search/:key",async (req,res)=>{
-    let {searchText} =  (req.query);
+app.get("/search/:key", async (req, res) => {
+  let { searchText } = (req.query);
   let searchData = await Listing.find({
-    "$or":[
-      {"description":{ $regex: ".*" + searchText + ".*", $options: "i" }},
-      {"title":{ $regex: ".*" + searchText + ".*", $options: "i" }},
+    "$or": [
+      { "description": { $regex: ".*" + searchText + ".*", $options: "i" } },
+      { "title": { $regex: ".*" + searchText + ".*", $options: "i" } },
     ]
   });
   res.render("listings/search.ejs", { searchData });
@@ -120,30 +120,56 @@ app.use("/", userRouter);
 //login using gmail or google account 
 
 app.get('/auth/google',
-passport.authenticate('google', { scope:
-    [ 'email', 'profile' ] }
-));
+  passport.authenticate('google', {
+    scope:
+      ['email', 'profile']
+  }
+  ));
 
-app.get( '/auth/google/callback',
-  passport.authenticate( 'google', {
-      successRedirect: '/auth/protected',
-      failureRedirect: '/auth/google/failure'
-}));
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/auth/protected',
+    failureRedirect: '/auth/google/failure'
+  }));
 
-app.get("/auth/google/failure",(req,res)=>{
-  req.flash("error","Login Failed");
+app.get("/auth/google/failure", (req, res) => {
+  req.flash("error", "Login Failed");
   res.redirect("/login");
 })
 
-app.get("/auth/protected", isLoggedin, async (req,res)=>{
+app.get("/auth/protected", isLoggedin, async (req, res) => {
   let name = req.user.displayName;
-  let  google_ID =  req.user.id;
+  let google_ID = req.user.id;
   let birthday = req.user.emails;
-  console.log(name);
-  console.log(birthday[0].value);
-  console.log(google_ID);
-  req.flash("success", "welcome to WonderLust ");
-  res.redirect("/listings");
+
+  try {
+    const newUser = new User({ email: birthday[0].value, username: name, dob: google_ID });
+    const resUser = await User.register(newUser, process.env.DEFAULT_PASSWORD);
+    req.login(resUser, (er) => {
+      if (er) {
+        return next(er);
+      }
+      req.flash("success", "welcome to WonderLust ");
+    res.redirect("/listings");
+    });
+  } catch (er) {
+    req.flash("error", er.message);
+    res.redirect("/signup");
+  }
+
+  // try{
+  //   const Create_usr = await User.create({
+  //       email: google_ID,
+  //       name : name,
+  //       dob : birthday[0].value
+  //   });
+  //   console.log(Create_usr, "User has been created!");
+  // }
+  // catch(error){
+  //   console.log(error);
+  // }
+
+  
 });
 
 
