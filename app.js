@@ -23,8 +23,8 @@ const Listing = require("./models/listing.js");
 const bodyParser = require("body-parser")
 require("./auth.js");
 
-const MONG_URL = "mongodb://127.0.0.1:27017/wonderLust";
-// const dburl = process.env.ATLASDB_URL;
+// const MONG_URL = "mongodb://127.0.0.1:27017/wonderLust";
+const dburl = process.env.ATLASDB_URL;
 main()
   .then(() => {
     console.log("connected to db");
@@ -34,7 +34,7 @@ main()
   });
 
 async function main() {
-  await mongoose.connect(MONG_URL);
+  await mongoose.connect(dburl);
 }
 //view engne and ejs settings and oparse of data so that can be read
 app.use(express.static(path.join(__dirname, "/public")));
