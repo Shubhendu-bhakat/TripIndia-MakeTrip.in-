@@ -46,7 +46,7 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 
 const store = MongoStore.create({
-  mongoUrl: MONG_URL,
+  mongoUrl: dburl,
   crypto: {
     secret: process.env.SECRET,
   },
